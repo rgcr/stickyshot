@@ -79,7 +79,10 @@ endif
 	@sed -i '' 's/$$(PRODUCT_BUNDLE_PACKAGE_TYPE)/APPL/g' $(OUT_DIR)/$(APP_BUNDLE)/Contents/Info.plist
 	@sed -i '' 's/$$(MACOSX_DEPLOYMENT_TARGET)/12.0/g' $(OUT_DIR)/$(APP_BUNDLE)/Contents/Info.plist
 	@sed -i '' 's/$$(DEVELOPMENT_LANGUAGE)/en/g' $(OUT_DIR)/$(APP_BUNDLE)/Contents/Info.plist
-	@cp -R StickyShot/Resources/Assets.xcassets $(OUT_DIR)/$(APP_BUNDLE)/Contents/Resources/ 2>/dev/null || true
+	@# Generate app icon
+	@swift scripts/create_icon.swift 2>/dev/null || true
+	@iconutil -c icns /tmp/AppIcon.iconset -o $(OUT_DIR)/$(APP_BUNDLE)/Contents/Resources/AppIcon.icns 2>/dev/null || true
+	@rm -rf /tmp/AppIcon.iconset
 	@# Sign the app to preserve permissions across rebuilds
 	@codesign --force --deep --sign - $(OUT_DIR)/$(APP_BUNDLE) 2>/dev/null || true
 
