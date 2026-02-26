@@ -1,6 +1,13 @@
 # StickyShot 📷
 
-Capture screen regions as floating, always-on-top preview windows. Perfect for referencing content while working, comparing designs, or keeping notes visible across your workspace.
+Capture any part of your screen into a floating, always-on-top preview.
+
+Ideal for quick reference, design comparisons, and keeping essential information visible while you work.
+<br></br>
+
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/d3f98d10-c4c6-48b9-9f79-b49051b1c2b5" />
+
+
 
 ## Features
 
