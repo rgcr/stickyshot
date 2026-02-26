@@ -1,0 +1,14 @@
+scripts/
+build/
+.build/
+*.md
+*!README.md
+*.dmg
+*.xcworkspace/
+xcuserdata/
+*.xcuserstate
+# macOS
+.DS_Store
+*.swp
+*~
+*.log
