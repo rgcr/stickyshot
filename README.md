@@ -1,6 +1,8 @@
-# StickyShot 📷
+# StickyShot 📷  
 
-Capture any part of your screen into a floating, always-on-top preview.
+## Screenshots that stay on top
+
+Capture any screen region as a floating preview window.
 
 Ideal for quick reference, design comparisons, and keeping essential information visible while you work.
 <br></br>
