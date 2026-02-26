@@ -1,8 +1,6 @@
 scripts/
 build/
 .build/
-*.md
-*!README.md
 *.dmg
 *.xcworkspace/
 xcuserdata/
@@ -12,3 +10,5 @@ xcuserdata/
 *.swp
 *~
 *.log
+*.md
+!README.md
