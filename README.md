@@ -24,7 +24,7 @@ Ideal for quick reference, design comparisons, and keeping essential information
   - `⌘C` - Copy to clipboard
   - `⌘S` - Save to file
   - `⌘Z` - Undo last drawing
-  - `Esc` - Close preview (or exit draw mode)
+  - `Esc` - Close preview
 - ⚙️ **Fully Configurable**:
   - Custom hotkey
   - Save directory
