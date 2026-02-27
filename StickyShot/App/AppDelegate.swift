@@ -70,9 +70,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let menu = NSMenu()
+        menu.delegate = self
         menu.addItem(NSMenuItem(title: "Take Screenshot", action: #selector(takeScreenshot), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Close All Previews", action: #selector(closeAllPreviews), keyEquivalent: ""))
+        
+        let closeAllItem = NSMenuItem(title: "Close All Previews", action: #selector(closeAllPreviews), keyEquivalent: "")
+        closeAllItem.tag = 100  // Tag to find this item
+        menu.addItem(closeAllItem)
+        
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Preferences...", action: #selector(showPreferences), keyEquivalent: ","))
         menu.addItem(NSMenuItem(title: "Check for Updates...", action: #selector(checkForUpdates), keyEquivalent: ""))
@@ -164,6 +169,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         • Click and drag to select region
         • Previews stay on top
         • Drag to move previews
+        • Scroll to adjust opacity
 
         Settings in Preferences.
         """
@@ -174,7 +180,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         attributedString.addAttribute(.font, value: NSFont.monospacedSystemFont(ofSize: 12, weight: .regular), range: fullRange)
         attributedString.addAttribute(.foregroundColor, value: NSColor.textColor, range: fullRange)
 
-        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 300, height: 230))
+        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 300, height: 250))
         textView.isEditable = false
         textView.isSelectable = true
         textView.drawsBackground = false
@@ -361,5 +367,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func reloadHotkey() {
         hotkeyManager?.unregister()
         registerHotkey()
+    }
+}
+
+
+// MARK: - NSMenuDelegate
+
+extension AppDelegate: NSMenuDelegate {
+    func menuWillOpen(_ menu: NSMenu) {
+        if let closeAllItem = menu.item(withTag: 100) {
+            let count = stickyWindowManager?.previewCount ?? 0
+            if count > 0 {
+                closeAllItem.title = "Close All Previews (\(count))"
+                closeAllItem.isEnabled = true
+            } else {
+                closeAllItem.title = "Close All Previews"
+                closeAllItem.isEnabled = false
+            }
+        }
     }
 }

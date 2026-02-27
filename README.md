@@ -1,4 +1,4 @@
-# StickyShot 📷  
+# StickyShot 📷
 
 ## Screenshots that stay on top
 
@@ -9,19 +9,24 @@ Ideal for quick reference, design comparisons, and keeping essential information
 
 <img width="900" alt="image" src="https://github.com/user-attachments/assets/d3f98d10-c4c6-48b9-9f79-b49051b1c2b5" />
 
-
-
 ## Features
 
 - 🎯 **Global Hotkey** - Trigger screenshot from anywhere (default: `⌘⇧2`)
 - ✂️ **Region Selection** - Click and drag to select any screen region
 - 📌 **Sticky Previews** - Screenshots float on top of all windows
 - 🖱️ **Draggable** - Move previews anywhere on screen
+- 🔍 **Adjustable Opacity** - Scroll on preview to change transparency
 - 📋 **Quick Actions**:
   - `⌘C` - Copy to clipboard
-  - `⌘S` - Save to file (Default: `~/Desktop` as `StickyShot_<year>-<month>-<day>_<hour>-<minute>-<second>.png`)
+  - `⌘S` - Save to file
   - `Esc` - Close preview
-- ⚙️ **Configurable** - Custom hotkey, change default save location
+- ⚙️ **Fully Configurable**:
+  - Custom hotkey
+  - Save directory
+  - Export format (PNG/JPEG)
+  - Border color and width
+  - Max preview count
+  - Launch at login
 
 ## Installation
 
@@ -34,15 +39,14 @@ brew install --cask stickyshot
 
 ### Manual Download
 
-1. Download [StickyShot-1.0.0-macos.dmg](https://github.com/rgcr/stickyshot/releases/download/v1.0.0/StickyShot-1.0.0-macos.dmg) from `Releases`
+1. Download [StickyShot-1.1.0-macos.dmg](https://github.com/rgcr/stickyshot/releases/download/v1.1.0/StickyShot-1.1.0-macos.dmg) from `Releases`
 2. Open the DMG and drag `StickyShot.app` to `/Applications`
-3. Bypass Gatekeeper `xattr -cr /Applications/Snape.app`
+3. Bypass Gatekeeper: `xattr -cr /Applications/StickyShot.app`
 4. Grant necessary permissions (see below)
 
 ## Permissions
 
 StickyShot requires two permissions:
-
 
 | Permission | Purpose | How to Grant |
 |------------|---------|--------------|
@@ -57,7 +61,6 @@ StickyShot requires two permissions:
 3. **Select** - Click and drag to select a region
 4. **Interact** - The screenshot becomes a floating sticky window
 
-
 ### Keyboard Shortcuts
 
 
@@ -67,6 +70,7 @@ StickyShot requires two permissions:
 | `⌘C` | Copy preview to clipboard |
 | `⌘S` | Save preview to file |
 | `Esc` | Close preview |
+| Scroll | Adjust preview opacity |
 
 
 ### Menu Bar Options
@@ -75,20 +79,26 @@ StickyShot requires two permissions:
 | Option | Description |
 |--------|-------------|
 | Take Screenshot | Manually trigger capture |
-| Close All Previews | Close all sticky preview windows |
+| Close All Previews | Close all sticky windows (shows count) |
 | Preferences... | Configure settings |
+| Check for Updates... | Check for new versions |
+| Help | Keyboard shortcuts and tips |
+| About StickyShot | Version and credits |
 | Quit | Exit application |
 
-
-### Options
+### Settings
 
 | Setting | Description | Default |
 |---------|-------------|---------|
-| `showBlueBorder` | Blue border on previews | `true` |
-| `saveDirectory` | Where to save screenshots | `~/Desktop` |
-| `launchAtLogin` | Start automatically on login | `false` |
-| `debugLogging` | Enable debug logs | `false` |
-
+| Screenshot Shortcut | Global hotkey | `⌘⇧2` |
+| Save Location | Where to save screenshots | `~/Desktop` |
+| Export Format | PNG or JPEG | PNG |
+| Show Border | Border on previews | On |
+| Border Color | Border color picker | Blue |
+| Border Width | 1-5 pixels | 1px |
+| Max Previews | 5, 10, 15, or 20 | 10 |
+| Launch at Login | Start automatically | Off |
+| Debug Logging | Enable debug logs | Off |
 
 ## Troubleshooting
 
@@ -99,6 +109,11 @@ StickyShot requires two permissions:
 ### Black/empty screenshots
 - Check Screen Recording permission is granted
 - Try removing and re-adding StickyShot in Screen Recording settings
+
+### After update, permissions not working
+- You may need to re-grant permissions after updating
+- System Settings → Privacy & Security → Accessibility/Screen Recording
+- Remove and re-add StickyShot
 
 ### Debug logs
 Enable debug logging in Preferences → Advanced, then check:

@@ -59,6 +59,11 @@ class StickyWindowManager {
     }
 
 
+    var previewCount: Int {
+        return previewWindows.count
+    }
+
+
     // MARK: - Private Methods
 
     private func removeWindow(_ window: StickyPreviewWindow) {

@@ -123,6 +123,13 @@ class StickyPreviewWindow: NSPanel {
     }
 
 
+    override func scrollWheel(with event: NSEvent) {
+        let delta = event.deltaY * 0.02
+        let newOpacity = max(0.3, min(1.0, self.alphaValue + delta))
+        self.alphaValue = newOpacity
+    }
+
+
     private func copyToClipboard() {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
@@ -196,20 +203,23 @@ class StickyPreviewWindow: NSPanel {
 
         let label = NSTextField(labelWithString: message)
         label.font = NSFont.boldSystemFont(ofSize: 14)
-        label.textColor = .white
-        label.backgroundColor = NSColor.black.withAlphaComponent(0.7)
+        label.textColor = .black
+        label.drawsBackground = false
         label.isBordered = false
         label.isEditable = false
         label.alignment = .center
         label.wantsLayer = true
+        label.layer?.backgroundColor = NSColor.orange.cgColor
         label.layer?.cornerRadius = 4
         label.sizeToFit()
 
+        let labelWidth = label.bounds.width + 16
+        let labelHeight = label.bounds.height + 8
         label.frame = NSRect(
-            x: (view.bounds.width - label.bounds.width - 16) / 2,
-            y: (view.bounds.height - label.bounds.height - 8) / 2,
-            width: label.bounds.width + 16,
-            height: label.bounds.height + 8
+            x: (view.bounds.width - labelWidth) / 2,
+            y: (view.bounds.height - labelHeight) / 2,
+            width: labelWidth,
+            height: labelHeight
         )
 
         view.addSubview(label)

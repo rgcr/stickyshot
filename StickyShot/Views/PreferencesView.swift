@@ -380,17 +380,26 @@ struct PreferencesView: View {
 
 
     private func resetToDefaults() {
-        let defaults = AppConfig.defaultConfig
-        selectedKey = defaults.shortcut.key.uppercased()
-        selectedModifiers = modifiersFromStrings(defaults.shortcut.modifiers)
-        showBorder = defaults.showBorder
-        borderColor = Color(hex: defaults.borderColor)
-        borderWidth = defaults.borderWidth
-        maxPreviews = defaults.maxPreviews
-        saveDirectory = defaults.saveDirectory
-        exportFormat = defaults.exportFormat
-        debugLogging = defaults.debugLogging
-        launchAtLogin = false
+        let alert = NSAlert()
+        alert.messageText = "Reset to Defaults?"
+        alert.informativeText = "This will reset all settings to their default values. You will still need to click Save to apply."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Reset")
+        alert.addButton(withTitle: "Cancel")
+        
+        if alert.runModal() == .alertFirstButtonReturn {
+            let defaults = AppConfig.defaultConfig
+            selectedKey = defaults.shortcut.key.uppercased()
+            selectedModifiers = modifiersFromStrings(defaults.shortcut.modifiers)
+            showBorder = defaults.showBorder
+            borderColor = Color(hex: defaults.borderColor)
+            borderWidth = defaults.borderWidth
+            maxPreviews = defaults.maxPreviews
+            saveDirectory = defaults.saveDirectory
+            exportFormat = defaults.exportFormat
+            debugLogging = defaults.debugLogging
+            launchAtLogin = false
+        }
     }
 
 
