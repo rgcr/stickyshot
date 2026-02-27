@@ -47,8 +47,7 @@ class Logger {
             }
         }
 
-        // Also print to console
-        print(logMessage, terminator: "")
+
     }
 
 

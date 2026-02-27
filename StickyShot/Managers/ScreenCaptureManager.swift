@@ -27,12 +27,12 @@ class ScreenCaptureManager {
 
     func startSelection() {
         if isCapturing {
-            print("[ScreenCaptureManager] Already capturing, ignoring")
+            debugLog("Already capturing, ignoring", category: "ScreenCaptureManager")
             return
         }
 
         isCapturing = true
-        print("[ScreenCaptureManager] Starting selection...")
+        debugLog("Starting selection...", category: "ScreenCaptureManager")
 
         // Find screen where mouse is located
         let mouseLocation = NSEvent.mouseLocation
@@ -46,12 +46,12 @@ class ScreenCaptureManager {
         }
 
         guard let screen = targetScreen else {
-            print("[ScreenCaptureManager] ERROR: No screen found")
+            debugLog("ERROR: No screen found", category: "ScreenCaptureManager")
             isCapturing = false
             return
         }
 
-        print("[ScreenCaptureManager] Screen frame: \(screen.frame), mouse at: \(mouseLocation)")
+        debugLog("Screen frame: \(screen.frame), mouse at: \(mouseLocation)", category: "ScreenCaptureManager")
 
         DispatchQueue.main.async { [weak self] in
             self?.showSelectionWindow(screen: screen)
@@ -62,7 +62,7 @@ class ScreenCaptureManager {
     private func showSelectionWindow(screen: NSScreen) {
         captureScreen = screen
 
-        print("[ScreenCaptureManager] Creating selection window for screen: \(screen.frame)")
+        debugLog("Creating selection window for screen: \(screen.frame)", category: "ScreenCaptureManager")
 
         let window = SelectionOverlayWindow(
             screen: screen,
@@ -92,12 +92,12 @@ class ScreenCaptureManager {
 
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-        print("[ScreenCaptureManager] Selection window shown on screen: \(screen.frame)")
+        debugLog("Selection window shown on screen: \(screen.frame)", category: "ScreenCaptureManager")
     }
 
 
     private func onSelectionComplete(_ rect: NSRect) {
-        print("[ScreenCaptureManager] Selection completed: \(rect)")
+        debugLog("Selection completed: \(rect)", category: "ScreenCaptureManager")
 
         // Store window reference and clear immediately
         let window = selectionWindow
@@ -124,7 +124,7 @@ class ScreenCaptureManager {
 
 
     private func onSelectionCancel() {
-        print("[ScreenCaptureManager] Selection cancelled")
+        debugLog("Selection cancelled", category: "ScreenCaptureManager")
         selectionWindow?.orderOut(nil)
         selectionWindow?.cleanup()
         selectionWindow?.close()
@@ -135,11 +135,11 @@ class ScreenCaptureManager {
 
 
     private func performCapture(rect: NSRect) {
-        print("[ScreenCaptureManager] Performing capture for rect: \(rect)")
+        debugLog("Performing capture for rect: \(rect)", category: "ScreenCaptureManager")
 
         // Get the primary screen height for coordinate conversion
         guard let primaryScreen = NSScreen.screens.first else {
-            print("[ScreenCaptureManager] ERROR: No screens found")
+            debugLog("ERROR: No screens found", category: "ScreenCaptureManager")
             return
         }
 
@@ -153,7 +153,7 @@ class ScreenCaptureManager {
             height: rect.height
         )
 
-        print("[ScreenCaptureManager] Capturing CGRect: \(cgRect)")
+        debugLog("Capturing CGRect: \(cgRect)", category: "ScreenCaptureManager")
 
         guard let cgImage = CGWindowListCreateImage(
             cgRect,
@@ -161,18 +161,18 @@ class ScreenCaptureManager {
             kCGNullWindowID,
             .bestResolution
         ) else {
-            print("[ScreenCaptureManager] ERROR: Failed to capture - check Screen Recording permission")
+            debugLog("ERROR: Failed to capture - check Screen Recording permission", category: "ScreenCaptureManager")
             return
         }
 
-        print("[ScreenCaptureManager] Captured image: \(cgImage.width)x\(cgImage.height)")
+        debugLog("Captured image: \(cgImage.width)x\(cgImage.height)", category: "ScreenCaptureManager")
 
         let nsImage = NSImage(cgImage: cgImage, size: rect.size)
-        print("[ScreenCaptureManager] Calling onCapture callback...")
+        debugLog("Calling onCapture callback...", category: "ScreenCaptureManager")
 
         DispatchQueue.main.async { [weak self] in
             self?.onCapture?(nsImage, rect)
-            print("[ScreenCaptureManager] Capture complete")
+            debugLog("Capture complete", category: "ScreenCaptureManager")
         }
     }
 }

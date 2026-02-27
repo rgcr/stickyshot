@@ -53,7 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             debugLog("Status item already exists, skipping", category: "AppDelegate")
             return
         }
-        
+
         debugLog("Creating status item...", category: "AppDelegate")
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem?.behavior = .removalAllowed
@@ -75,6 +75,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: "Close All Previews", action: #selector(closeAllPreviews), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Preferences...", action: #selector(showPreferences), keyEquivalent: ","))
+        menu.addItem(NSMenuItem(title: "Check for Updates...", action: #selector(checkForUpdates), keyEquivalent: ""))
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "Help", action: #selector(showHelp), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "About StickyShot", action: #selector(showAbout), keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApp), keyEquivalent: "q"))
 
@@ -124,7 +128,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             )
 
             preferencesWindow = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 380, height: 600),
+                contentRect: NSRect(x: 0, y: 0, width: 380, height: 665),
                 styleMask: [.titled, .closable],
                 backing: .buffered,
                 defer: false
@@ -137,6 +141,200 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         preferencesWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+
+    @objc private func showHelp() {
+        let config = ConfigManager.shared.config
+        let shortcut = formatShortcut(key: config.shortcut.key, modifiers: config.shortcut.modifiers)
+
+        let alert = NSAlert()
+        alert.messageText = "StickyShot Help"
+
+        let padding = String(repeating: " ", count: max(0, 5 - shortcut.count))
+        let text = """
+        Keyboard Shortcuts:
+
+        \(shortcut)\(padding) Take screenshot
+        ⌘C    Copy to clipboard
+        ⌘S    Save to file
+        Esc   Close preview
+
+        Tips:
+        • Click and drag to select region
+        • Previews stay on top
+        • Drag to move previews
+
+        Settings in Preferences.
+        """
+
+        let attributedString = NSMutableAttributedString(string: text)
+        let fullRange = NSRange(location: 0, length: text.count)
+
+        attributedString.addAttribute(.font, value: NSFont.monospacedSystemFont(ofSize: 12, weight: .regular), range: fullRange)
+        attributedString.addAttribute(.foregroundColor, value: NSColor.textColor, range: fullRange)
+
+        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 300, height: 230))
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.drawsBackground = false
+        textView.textStorage?.setAttributedString(attributedString)
+
+        alert.accessoryView = textView
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
+    }
+
+
+    private func formatShortcut(key: String, modifiers: [String]) -> String {
+        var result = ""
+        if modifiers.contains("control") { result += "⌃" }
+        if modifiers.contains("option") { result += "⌥" }
+        if modifiers.contains("shift") { result += "⇧" }
+        if modifiers.contains("command") { result += "⌘" }
+        result += key.uppercased()
+        return result
+    }
+
+
+    @objc private func showAbout() {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        
+        let text = """
+        Version \(version)
+        
+        Screenshots that stay on top.
+        Capture any screen region as a floating preview window.
+        
+        © 2026 Roger C.
+        
+        """
+        
+        let urlString = "https://github.com/rgcr/stickyshot"
+        let fullText = text + urlString
+        
+        let attributedString = NSMutableAttributedString(string: fullText)
+        let fullRange = NSRange(location: 0, length: fullText.count)
+        let urlRange = (fullText as NSString).range(of: urlString)
+        
+        attributedString.addAttribute(.font, value: NSFont.monospacedSystemFont(ofSize: 12, weight: .regular), range: fullRange)
+        attributedString.addAttribute(.foregroundColor, value: NSColor.textColor, range: fullRange)
+        attributedString.addAttribute(.link, value: urlString, range: urlRange)
+        
+        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 340, height: 140))
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.drawsBackground = false
+        textView.textStorage?.setAttributedString(attributedString)
+        
+        let alert = NSAlert()
+        alert.messageText = "StickyShot"
+        alert.accessoryView = textView
+        alert.alertStyle = .informational
+        
+        if let icon = NSImage(named: NSImage.applicationIconName) {
+            alert.icon = icon
+        }
+        
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
+    }
+
+
+    @objc private func checkForUpdates() {
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
+        let repoURL = "https://api.github.com/repos/rgcr/stickyshot/releases/latest"
+        
+        guard let url = URL(string: repoURL) else { return }
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self.showUpdateError("Could not check for updates: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let data = data,
+                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let tagName = json["tag_name"] as? String else {
+                    self.showUpdateError("Could not parse update information.")
+                    return
+                }
+                
+                let latestVersion = tagName.replacingOccurrences(of: "v", with: "")
+                
+                if self.isNewerVersion(latestVersion, than: currentVersion) {
+                    self.showUpdateAvailable(latestVersion: latestVersion, currentVersion: currentVersion)
+                } else {
+                    self.showUpToDate(currentVersion: currentVersion)
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    
+    private func isNewerVersion(_ latest: String, than current: String) -> Bool {
+        let latestParts = latest.split(separator: ".").compactMap { Int($0) }
+        let currentParts = current.split(separator: ".").compactMap { Int($0) }
+        
+        for i in 0..<max(latestParts.count, currentParts.count) {
+            let l = i < latestParts.count ? latestParts[i] : 0
+            let c = i < currentParts.count ? currentParts[i] : 0
+            if l > c { return true }
+            if l < c { return false }
+        }
+        return false
+    }
+    
+    
+    private func showUpdateAvailable(latestVersion: String, currentVersion: String) {
+        let alert = NSAlert()
+        alert.messageText = "Update Available"
+        alert.informativeText = """
+        A new version of StickyShot is available!
+        
+        Current version: \(currentVersion)
+        Latest version: \(latestVersion)
+        
+        To update:
+        brew upgrade --cask stickyshot
+        
+        Or download from GitHub releases.
+        
+        Note: You will need to re-grant permissions in
+        System Settings → Privacy & Security
+        """
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "Open GitHub")
+        alert.addButton(withTitle: "Later")
+        
+        if alert.runModal() == .alertFirstButtonReturn {
+            if let url = URL(string: "https://github.com/rgcr/stickyshot/releases/latest") {
+                NSWorkspace.shared.open(url)
+            }
+        }
+    }
+    
+    
+    private func showUpToDate(currentVersion: String) {
+        let alert = NSAlert()
+        alert.messageText = "You're up to date!"
+        alert.informativeText = "StickyShot \(currentVersion) is the latest version."
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
+    }
+    
+    
+    private func showUpdateError(_ message: String) {
+        let alert = NSAlert()
+        alert.messageText = "Update Check Failed"
+        alert.informativeText = message
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
     }
 
 

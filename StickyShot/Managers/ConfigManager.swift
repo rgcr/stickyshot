@@ -43,14 +43,28 @@ class ConfigManager {
     }
 
 
-    func updateBlueBorder(_ show: Bool) {
-        config.showBlueBorder = show
+    func updateBorder(show: Bool, color: String, width: Int) {
+        config.showBorder = show
+        config.borderColor = color
+        config.borderWidth = width
+        saveConfig()
+    }
+
+
+    func updateMaxPreviews(_ count: Int) {
+        config.maxPreviews = count
         saveConfig()
     }
 
 
     func updateSaveDirectory(_ path: String) {
         config.saveDirectory = path
+        saveConfig()
+    }
+
+
+    func updateExportFormat(_ format: String) {
+        config.exportFormat = format
         saveConfig()
     }
 
@@ -80,7 +94,7 @@ class ConfigManager {
             let decoder = JSONDecoder()
             config = try decoder.decode(AppConfig.self, from: data)
         } catch {
-            print("Failed to load config: \(error)")
+            debugLog("Failed to load config: \(error)", category: "ConfigManager")
             config = AppConfig.defaultConfig
         }
     }
@@ -93,7 +107,7 @@ class ConfigManager {
             let data = try encoder.encode(config)
             try data.write(to: configFile)
         } catch {
-            print("Failed to save config: \(error)")
+            debugLog("Failed to save config: \(error)", category: "ConfigManager")
         }
     }
 
@@ -106,7 +120,7 @@ class ConfigManager {
             )
             saveConfig()
         } catch {
-            print("Failed to create config directory: \(error)")
+            debugLog("Failed to create config directory: \(error)", category: "ConfigManager")
         }
     }
 }

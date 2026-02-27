@@ -11,17 +11,21 @@ import AppKit
 class StickyPreviewWindow: NSPanel {
 
     private let previewImage: NSImage
-    private let showBlueBorder: Bool
+    private let showBorder: Bool
+    private let borderColor: NSColor
+    private let borderWidth: CGFloat
     private var onCloseCallback: ((StickyPreviewWindow) -> Void)?
     private var imageView: NSImageView!
 
 
-    init(image: NSImage, initialFrame: NSRect, showBlueBorder: Bool, onClose: @escaping (StickyPreviewWindow) -> Void) {
+    init(image: NSImage, initialFrame: NSRect, showBorder: Bool, borderColor: NSColor, borderWidth: Int, onClose: @escaping (StickyPreviewWindow) -> Void) {
         self.previewImage = image
-        self.showBlueBorder = showBlueBorder
+        self.showBorder = showBorder
+        self.borderColor = borderColor
+        self.borderWidth = showBorder ? CGFloat(borderWidth) : 0.0
         self.onCloseCallback = onClose
 
-        let borderWidth: CGFloat = showBlueBorder ? 3.0 : 0.0
+        let borderWidth: CGFloat = self.borderWidth
         let windowFrame = NSRect(
             x: initialFrame.origin.x - borderWidth,
             y: initialFrame.origin.y - borderWidth,
@@ -52,7 +56,7 @@ class StickyPreviewWindow: NSPanel {
 
         setupContent(borderWidth: borderWidth)
 
-        print("[StickyPreviewWindow] Window initialized")
+        debugLog("Window initialized", category: "StickyPreviewWindow")
     }
 
 
@@ -60,12 +64,12 @@ class StickyPreviewWindow: NSPanel {
         let containerView = DraggableView(frame: NSRect(origin: .zero, size: frame.size))
         containerView.wantsLayer = true
 
-        if showBlueBorder {
-            containerView.layer?.backgroundColor = NSColor(red: 0.4, green: 0.4, blue: 1.0, alpha: 1.0).cgColor
+        if showBorder {
+            containerView.layer?.backgroundColor = borderColor.cgColor
         }
 
         let imageRect: NSRect
-        if showBlueBorder {
+        if showBorder {
             imageRect = NSRect(
                 x: borderWidth,
                 y: borderWidth,
@@ -128,12 +132,16 @@ class StickyPreviewWindow: NSPanel {
 
 
     private func saveToDesktop() {
+        let config = ConfigManager.shared.config
+        let format = config.exportFormat
+        let ext = format == "jpeg" ? "jpg" : format
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
         let timestamp = dateFormatter.string(from: Date())
-        let filename = "StickyShot_\(timestamp).png"
+        let filename = "StickyShot_\(timestamp).\(ext)"
 
-        let saveDir = ConfigManager.shared.config.saveDirectory
+        let saveDir = config.saveDirectory
         let dirURL = URL(fileURLWithPath: saveDir)
         
         // Create directory if needed
@@ -141,7 +149,7 @@ class StickyPreviewWindow: NSPanel {
             do {
                 try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: true)
             } catch {
-                print("[StickyPreviewWindow] Failed to create directory: \(error)")
+                debugLog("Failed to create directory: \(error)", category: "StickyPreviewWindow")
                 return
             }
         }
@@ -149,17 +157,28 @@ class StickyPreviewWindow: NSPanel {
         let fileURL = dirURL.appendingPathComponent(filename)
 
         guard let tiffData = previewImage.tiffRepresentation,
-              let bitmapRep = NSBitmapImageRep(data: tiffData),
-              let pngData = bitmapRep.representation(using: .png, properties: [:]) else {
-            print("[StickyPreviewWindow] Failed to convert image to PNG")
+              let bitmapRep = NSBitmapImageRep(data: tiffData) else {
+            debugLog("Failed to get image data", category: "StickyPreviewWindow")
+            return
+        }
+        
+        let imageData: Data?
+        if format == "jpeg" {
+            imageData = bitmapRep.representation(using: .jpeg, properties: [.compressionFactor: 1.0])
+        } else {
+            imageData = bitmapRep.representation(using: .png, properties: [:])
+        }
+        
+        guard let data = imageData else {
+            debugLog("Failed to convert image to \(format.uppercased())", category: "StickyPreviewWindow")
             return
         }
 
         do {
-            try pngData.write(to: fileURL)
+            try data.write(to: fileURL)
             showFeedback("Saved!")
         } catch {
-            print("[StickyPreviewWindow] Failed to save image: \(error)")
+            debugLog("Failed to save image: \(error)", category: "StickyPreviewWindow")
         }
     }
 

@@ -10,31 +10,36 @@ import AppKit
 
 class StickyWindowManager {
 
-    private let maxPreviews = 10
     private var previewWindows: [StickyPreviewWindow] = []
 
 
     // MARK: - Public Methods
 
     func addPreview(image: NSImage, frame: NSRect) {
-        print("[StickyWindowManager] Adding preview, current count: \(previewWindows.count)")
+        let maxPreviews = ConfigManager.shared.config.maxPreviews
+        debugLog("Adding preview, current count: \(previewWindows.count), max: \(maxPreviews)", category: "StickyWindowManager")
 
         // Remove oldest if at limit
         while previewWindows.count >= maxPreviews {
             if let oldest = previewWindows.first {
-                print("[StickyWindowManager] Removing oldest preview")
+                debugLog("Removing oldest preview", category: "StickyWindowManager")
                 oldest.orderOut(nil)
                 previewWindows.removeFirst()
             }
         }
 
-        let showBorder = ConfigManager.shared.config.showBlueBorder
-        print("[StickyWindowManager] Creating preview window, showBorder=\(showBorder), frame=\(frame)")
+        let config = ConfigManager.shared.config
+        let showBorder = config.showBorder
+        let borderColor = NSColor(hex: config.borderColor)
+        let borderWidth = config.borderWidth
+        debugLog("Creating preview window, showBorder=\(showBorder), borderWidth=\(borderWidth), frame=\(frame)", category: "StickyWindowManager")
 
         let previewWindow = StickyPreviewWindow(
             image: image,
             initialFrame: frame,
-            showBlueBorder: showBorder,
+            showBorder: showBorder,
+            borderColor: borderColor,
+            borderWidth: borderWidth,
             onClose: { [weak self] window in
                 self?.removeWindow(window)
             }
@@ -42,7 +47,7 @@ class StickyWindowManager {
 
         previewWindows.append(previewWindow)
         previewWindow.orderFrontRegardless()
-        print("[StickyWindowManager] Preview window displayed, total count: \(previewWindows.count)")
+        debugLog("Preview window displayed, total count: \(previewWindows.count)", category: "StickyWindowManager")
     }
 
 
