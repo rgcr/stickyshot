@@ -42,7 +42,7 @@ brew install --cask stickyshot
 
 ### Manual Download
 
-1. Download [StickyShot-1.1.0-macos.dmg](https://github.com/rgcr/stickyshot/releases/download/v1.1.0/StickyShot-1.1.0-macos.dmg) from `Releases`
+1. Download [StickyShot-1.1.0-macos.dmg](https://github.com/rgcr/stickyshot/releases/download/v1.1.0/StickyShot-1.1.0-macos.dmg) from Releases
 2. Open the DMG and drag `StickyShot.app` to `/Applications`
 3. Bypass Gatekeeper: `xattr -cr /Applications/StickyShot.app`
 4. Grant necessary permissions (see below)
@@ -76,9 +76,9 @@ StickyShot requires two permissions:
 | `Esc` | Exit draw mode / Close preview |
 | Scroll | Adjust preview opacity |
 
-<<<<<<< HEAD
-=======
+
 ### Right-Click Menu (on preview)
+
 
 | Option | Description |
 |--------|-------------|
@@ -91,7 +91,7 @@ StickyShot requires two permissions:
 | Draw Square | Enter square drawing mode |
 | Draw Circle | Enter circle drawing mode |
 | Close | Close preview |
->>>>>>> 39dd626 (Basic drawing tools with right click)
+
 
 ### Menu Bar Options
 
@@ -106,7 +106,9 @@ StickyShot requires two permissions:
 | About StickyShot | Version and credits |
 | Quit | Exit application |
 
+
 ### Settings
+
 
 | Setting | Description | Default |
 |---------|-------------|---------|
@@ -120,6 +122,7 @@ StickyShot requires two permissions:
 | Draw Color | Color for annotations | Red |
 | Launch at Login | Start automatically | Off |
 | Debug Logging | Enable debug logs | Off |
+
 
 ## Annotation Tools
 
