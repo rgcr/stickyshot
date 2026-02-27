@@ -45,7 +45,7 @@ brew install --cask stickyshot
 
 ### Manual Download
 
-1. Download [StickyShot-1.1.0-macos.dmg](https://github.com/rgcr/stickyshot/releases/download/v1.1.0/StickyShot-1.1.0-macos.dmg) from Releases
+1. Download [StickyShot-1.2.0-macos.dmg](https://github.com/rgcr/stickyshot/releases/download/v1.2.0/StickyShot-1.2.0-macos.dmg) from Releases
 2. Open the DMG and drag `StickyShot.app` to `/Applications`
 3. Bypass Gatekeeper: `xattr -cr /Applications/StickyShot.app`
 4. Grant necessary permissions (see below)
