@@ -162,6 +162,14 @@ clean:
 rebuild: clean build
 
 
+# Reset user data (for testing fresh install)
+reset:
+	@echo "Resetting StickyShot user data..."
+	@defaults delete $(BUNDLE_ID) 2>/dev/null || true
+	@rm -rf ~/.config/stickyshot
+	@echo "Reset complete. UserDefaults and config cleared."
+
+
 # Type check only (fast validation)
 check:
 	@echo "Type checking..."
@@ -190,4 +198,5 @@ help:
 	@echo "  rebuild      Clean and build debug version"
 	@echo "  check        Type check sources (fast validation)"
 	@echo "  dmg          Create DMG for distribution"
+	@echo "  reset        Clear UserDefaults and config (test fresh install)"
 	@echo "  help         Show this help message"

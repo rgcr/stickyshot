@@ -16,6 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var stickyWindowManager: StickyWindowManager?
     private var screenCaptureManager: ScreenCaptureManager?
     private var preferencesWindow: NSWindow?
+    private var onboardingController: OnboardingWindowController?
 
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -33,7 +34,40 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Run as menu bar only app (no dock icon)
         NSApp.setActivationPolicy(.accessory)
 
+        // Show onboarding if permissions not granted
+        if shouldShowOnboarding() {
+            showOnboarding()
+        }
+
         debugLog("App launched successfully", category: "AppDelegate")
+    }
+    
+    
+    private func shouldShowOnboarding() -> Bool {
+        let key = "hasCompletedOnboarding"
+        let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: key)
+        
+        let hasAccessibility = AXIsProcessTrusted()
+        let hasScreenRecording = CGPreflightScreenCaptureAccess()
+        let hasPermissions = hasAccessibility && hasScreenRecording
+        
+        // Show if never completed onboarding OR permissions missing
+        return !hasCompletedOnboarding || !hasPermissions
+    }
+    
+    
+    private func markOnboardingComplete() {
+        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+    }
+    
+    
+    private func showOnboarding() {
+        onboardingController = OnboardingWindowController()
+        onboardingController?.show { [weak self] in
+            self?.onboardingController = nil
+            self?.markOnboardingComplete()
+            debugLog("Onboarding completed", category: "AppDelegate")
+        }
     }
 
 
