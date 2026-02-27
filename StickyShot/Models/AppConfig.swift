@@ -27,6 +27,7 @@ struct AppConfig: Codable {
     var maxPreviews: Int
     var saveDirectory: String
     var exportFormat: String
+    var drawColor: String
     var debugLogging: Bool
     var launchAtLogin: Bool
 
@@ -40,11 +41,12 @@ struct AppConfig: Codable {
         case maxPreviews
         case saveDirectory
         case exportFormat
+        case drawColor
         case debugLogging
         case launchAtLogin
     }
 
-    init(shortcut: ShortcutConfig, showBorder: Bool, borderColor: String, borderWidth: Int, maxPreviews: Int, saveDirectory: String, exportFormat: String, debugLogging: Bool, launchAtLogin: Bool) {
+    init(shortcut: ShortcutConfig, showBorder: Bool, borderColor: String, borderWidth: Int, maxPreviews: Int, saveDirectory: String, exportFormat: String, drawColor: String, debugLogging: Bool, launchAtLogin: Bool) {
         self.shortcut = shortcut
         self.showBorder = showBorder
         self.borderColor = borderColor
@@ -52,6 +54,7 @@ struct AppConfig: Codable {
         self.maxPreviews = maxPreviews
         self.saveDirectory = saveDirectory
         self.exportFormat = exportFormat
+        self.drawColor = drawColor
         self.debugLogging = debugLogging
         self.launchAtLogin = launchAtLogin
     }
@@ -72,6 +75,7 @@ struct AppConfig: Codable {
         maxPreviews = try container.decodeIfPresent(Int.self, forKey: .maxPreviews) ?? 10
         saveDirectory = try container.decode(String.self, forKey: .saveDirectory)
         exportFormat = try container.decodeIfPresent(String.self, forKey: .exportFormat) ?? "png"
+        drawColor = try container.decodeIfPresent(String.self, forKey: .drawColor) ?? "#FF0000"
         debugLogging = try container.decodeIfPresent(Bool.self, forKey: .debugLogging) ?? false
         launchAtLogin = try container.decodeIfPresent(Bool.self, forKey: .launchAtLogin) ?? false
     }
@@ -85,6 +89,7 @@ struct AppConfig: Codable {
         try container.encode(maxPreviews, forKey: .maxPreviews)
         try container.encode(saveDirectory, forKey: .saveDirectory)
         try container.encode(exportFormat, forKey: .exportFormat)
+        try container.encode(drawColor, forKey: .drawColor)
         try container.encode(debugLogging, forKey: .debugLogging)
         try container.encode(launchAtLogin, forKey: .launchAtLogin)
     }
@@ -99,6 +104,7 @@ struct AppConfig: Codable {
             maxPreviews: 10,
             saveDirectory: desktop,
             exportFormat: "png",
+            drawColor: "#FF0000",
             debugLogging: false,
             launchAtLogin: false
         )

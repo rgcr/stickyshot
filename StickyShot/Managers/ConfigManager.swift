@@ -69,6 +69,12 @@ class ConfigManager {
     }
 
 
+    func updateDrawColor(_ color: String) {
+        config.drawColor = color
+        saveConfig()
+    }
+
+
     func updateDebugLogging(_ enabled: Bool) {
         config.debugLogging = enabled
         saveConfig()

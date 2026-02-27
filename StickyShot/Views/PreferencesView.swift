@@ -19,6 +19,7 @@ struct PreferencesView: View {
     @State private var maxPreviews: Int
     @State private var saveDirectory: String
     @State private var exportFormat: String
+    @State private var drawColor: Color
     @State private var debugLogging: Bool
     @State private var launchAtLogin: Bool
     @State private var isRecording: Bool = false
@@ -49,6 +50,7 @@ struct PreferencesView: View {
         _maxPreviews = State(initialValue: config.maxPreviews)
         _saveDirectory = State(initialValue: config.saveDirectory)
         _exportFormat = State(initialValue: config.exportFormat)
+        _drawColor = State(initialValue: Color(hex: config.drawColor))
         _debugLogging = State(initialValue: config.debugLogging)
         _launchAtLogin = State(initialValue: LoginItemManager.shared.isEnabled)
 
@@ -289,6 +291,16 @@ struct PreferencesView: View {
 
                     Spacer()
                 }
+                
+                HStack {
+                    Text("Draw color")
+                        .foregroundColor(.secondary)
+                    
+                    ColorPicker("", selection: $drawColor, supportsOpacity: false)
+                        .labelsHidden()
+                    
+                    Spacer()
+                }
             }
             .padding(12)
             .background(Color(NSColor.controlBackgroundColor))
@@ -372,6 +384,7 @@ struct PreferencesView: View {
         ConfigManager.shared.updateMaxPreviews(maxPreviews)
         ConfigManager.shared.updateSaveDirectory(saveDirectory)
         ConfigManager.shared.updateExportFormat(exportFormat)
+        ConfigManager.shared.updateDrawColor(NSColor(drawColor).hexString)
         ConfigManager.shared.updateDebugLogging(debugLogging)
         LoginItemManager.shared.setEnabled(launchAtLogin)
 
@@ -397,6 +410,7 @@ struct PreferencesView: View {
             maxPreviews = defaults.maxPreviews
             saveDirectory = defaults.saveDirectory
             exportFormat = defaults.exportFormat
+            drawColor = Color(hex: defaults.drawColor)
             debugLogging = defaults.debugLogging
             launchAtLogin = false
         }

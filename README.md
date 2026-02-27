@@ -16,15 +16,18 @@ Ideal for quick reference, design comparisons, and keeping essential information
 - 📌 **Sticky Previews** - Screenshots float on top of all windows
 - 🖱️ **Draggable** - Move previews anywhere on screen
 - 🔍 **Adjustable Opacity** - Scroll on preview to change transparency
+- ✏️ **Annotation Tools** - Draw lines, arrows, squares, circles
 - 📋 **Quick Actions**:
   - `⌘C` - Copy to clipboard
   - `⌘S` - Save to file
-  - `Esc` - Close preview
+  - `⌘Z` - Undo last drawing
+  - `Esc` - Close preview (or exit draw mode)
 - ⚙️ **Fully Configurable**:
   - Custom hotkey
   - Save directory
   - Export format (PNG/JPEG)
   - Border color and width
+  - Draw color
   - Max preview count
   - Launch at login
 
@@ -69,9 +72,26 @@ StickyShot requires two permissions:
 | `⌘⇧2` | Take screenshot (default, configurable) |
 | `⌘C` | Copy preview to clipboard |
 | `⌘S` | Save preview to file |
-| `Esc` | Close preview |
+| `⌘Z` | Undo last drawing |
+| `Esc` | Exit draw mode / Close preview |
 | Scroll | Adjust preview opacity |
 
+<<<<<<< HEAD
+=======
+### Right-Click Menu (on preview)
+
+| Option | Description |
+|--------|-------------|
+| Copy | Copy to clipboard (with drawings) |
+| Save | Save to file (with drawings) |
+| Undo | Remove last drawing |
+| Clear All Drawings | Remove all drawings |
+| Draw Line | Enter line drawing mode |
+| Draw Arrow | Enter arrow drawing mode |
+| Draw Square | Enter square drawing mode |
+| Draw Circle | Enter circle drawing mode |
+| Close | Close preview |
+>>>>>>> 39dd626 (Basic drawing tools with right click)
 
 ### Menu Bar Options
 
@@ -97,8 +117,18 @@ StickyShot requires two permissions:
 | Border Color | Border color picker | Blue |
 | Border Width | 1-5 pixels | 1px |
 | Max Previews | 5, 10, 15, or 20 | 10 |
+| Draw Color | Color for annotations | Red |
 | Launch at Login | Start automatically | Off |
 | Debug Logging | Enable debug logs | Off |
+
+## Annotation Tools
+
+1. Right-click on a preview
+2. Select a drawing tool (Line, Arrow, Square, Circle)
+3. Click and drag to draw
+4. Drawing auto-exits after each shape
+5. Use Undo (`⌘Z`) to remove mistakes
+6. Drawings are included when copying or saving
 
 ## Troubleshooting
 
@@ -111,7 +141,7 @@ StickyShot requires two permissions:
 - Try removing and re-adding StickyShot in Screen Recording settings
 
 ### After update, permissions not working
-- You may need to re-grant permissions after updating
+- You will need to re-grant permissions after updating
 - System Settings → Privacy & Security → Accessibility/Screen Recording
 - Remove and re-add StickyShot
 

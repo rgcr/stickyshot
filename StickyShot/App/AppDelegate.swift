@@ -42,9 +42,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupManagers() {
         stickyWindowManager = StickyWindowManager()
         hotkeyManager = HotkeyManager()
-        screenCaptureManager = ScreenCaptureManager { [weak self] image, frame in
-            self?.handleScreenCapture(image: image, frame: frame)
-        }
+        screenCaptureManager = ScreenCaptureManager(
+            onCapture: { [weak self] image, frame in
+                self?.handleScreenCapture(image: image, frame: frame)
+            },
+            onCancel: { [weak self] in
+                self?.hotkeyManager?.isPaused = false
+                debugLog("Selection cancelled, hotkey re-enabled", category: "AppDelegate")
+            }
+        )
     }
 
 
@@ -163,6 +169,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         \(shortcut)\(padding) Take screenshot
         ⌘C    Copy to clipboard
         ⌘S    Save to file
+        ⌘Z    Undo drawing
         Esc   Close preview
 
         Tips:
@@ -170,6 +177,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         • Previews stay on top
         • Drag to move previews
         • Scroll to adjust opacity
+        • Right-click to draw annotations
 
         Settings in Preferences.
         """
@@ -180,7 +188,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         attributedString.addAttribute(.font, value: NSFont.monospacedSystemFont(ofSize: 12, weight: .regular), range: fullRange)
         attributedString.addAttribute(.foregroundColor, value: NSColor.textColor, range: fullRange)
 
-        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 300, height: 250))
+        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 300, height: 280))
         textView.isEditable = false
         textView.isSelectable = true
         textView.drawsBackground = false

@@ -15,11 +15,13 @@ class ScreenCaptureManager {
     private var selectionWindow: SelectionOverlayWindow?
     private var captureScreen: NSScreen?
     private var onCapture: ((NSImage, NSRect) -> Void)?
+    private var onCancel: (() -> Void)?
     private var isCapturing: Bool = false
 
 
-    init(onCapture: @escaping (NSImage, NSRect) -> Void) {
+    init(onCapture: @escaping (NSImage, NSRect) -> Void, onCancel: @escaping () -> Void) {
         self.onCapture = onCapture
+        self.onCancel = onCancel
     }
 
 
@@ -131,6 +133,7 @@ class ScreenCaptureManager {
         selectionWindow = nil
         captureScreen = nil
         isCapturing = false
+        onCancel?()
     }
 
 
