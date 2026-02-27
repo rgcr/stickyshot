@@ -123,8 +123,14 @@ class StickyPreviewWindow: NSPanel {
         menu.addItem(NSMenuItem(title: "Copy", action: #selector(copyAction), keyEquivalent: "c"))
         menu.addItem(NSMenuItem(title: "Save", action: #selector(saveAction), keyEquivalent: "s"))
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Undo", action: #selector(undoAction), keyEquivalent: "z"))
-        menu.addItem(NSMenuItem(title: "Clear All Drawings", action: #selector(clearAllAction), keyEquivalent: ""))
+        
+        let undoItem = NSMenuItem(title: "Undo", action: #selector(undoAction), keyEquivalent: "z")
+        undoItem.tag = 1
+        menu.addItem(undoItem)
+        
+        let clearItem = NSMenuItem(title: "Clear All Drawings", action: #selector(clearAllAction), keyEquivalent: "")
+        clearItem.tag = 2
+        menu.addItem(clearItem)
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Draw Line", action: #selector(drawLine), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Draw Arrow", action: #selector(drawArrow), keyEquivalent: ""))
@@ -133,6 +139,7 @@ class StickyPreviewWindow: NSPanel {
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Close", action: #selector(closeAction), keyEquivalent: ""))
         
+        menu.delegate = self
         drawingView.menu = menu
     }
     
@@ -406,6 +413,21 @@ class StickyPreviewWindow: NSPanel {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak label] in
             label?.removeFromSuperview()
+        }
+    }
+}
+
+
+// MARK: - NSMenuDelegate
+
+extension StickyPreviewWindow: NSMenuDelegate {
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        let hasDrawings = !drawingView.shapes.isEmpty
+        if let undoItem = menu.item(withTag: 1) {
+            undoItem.isEnabled = hasDrawings
+        }
+        if let clearItem = menu.item(withTag: 2) {
+            clearItem.isEnabled = hasDrawings
         }
     }
 }

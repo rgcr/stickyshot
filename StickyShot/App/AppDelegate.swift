@@ -263,10 +263,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         guard let url = URL(string: repoURL) else { return }
 
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 10
+        config.timeoutIntervalForResource = 10
+        let session = URLSession(configuration: config)
+
+        let task = session.dataTask(with: url) { data, response, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    self.showUpdateError("Could not check for updates: \(error.localizedDescription)")
+                    let nsError = error as NSError
+                    if nsError.code == NSURLErrorTimedOut || nsError.code == NSURLErrorNotConnectedToInternet {
+                        self.showUpdateError("Unable to check for updates. Please check your internet connection.")
+                    } else {
+                        self.showUpdateError("Could not check for updates: \(error.localizedDescription)")
+                    }
                     return
                 }
 
