@@ -7,7 +7,10 @@ Capture any screen region as a floating preview window.
 Ideal for quick reference, design comparisons, and keeping essential information visible while you work.
 <br></br>
 
-<img width="900" alt="image" src="https://github.com/user-attachments/assets/d3f98d10-c4c6-48b9-9f79-b49051b1c2b5" />
+> Quick annotation tools (red lines)
+
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/2eedc986-801f-4c7e-a9d5-c1230265e7a6" />
+
 
 ## Features
 
