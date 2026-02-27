@@ -67,7 +67,7 @@ struct PreferencesView: View {
 
             // Content
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 8) {
                     shortcutSection
                     saveLocationSection
                     appearanceSection
